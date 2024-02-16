@@ -1,0 +1,7 @@
+{
+    "name": "mern-crud-app-with-auth",
+    "scripts": {
+        "server": "cd ./server && npm run dev",
+        "client": "cd ./client && npm run dev"
+    }
+}
