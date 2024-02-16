@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { RouterProvider, redirect } from "react-router-dom";
+import useAxiosInterceptor from "./hooks/useAxiosInterceptor";
+import { createBrowserRouter } from "react-router-dom";
+import Login from "./pages/AuthPage/Login";
+import Signup from "./pages/AuthPage/Signup";
+import ProtectedPage from "./pages/ProtectedPage";
+import AuthPages from "./pages/AuthPage";
+import EditProfile from "./pages/ProtectedPage/EditProfile";
+import ViewProfile from "./pages/ProtectedPage/ViewProfile";
+import ErrorPage from "./pages/GenericPage/ErrorPage";
 
-function App() {
-  const [count, setCount] = useState(0)
+const router = createBrowserRouter([
+  {
+    element: <ProtectedPage />,
+    children: [
+      {
+        path: "",
+        loader: () => redirect("profile"),
+      },
+      {
+        path: "profile",
+        element: <ViewProfile />,
+      },
+      {
+        path: "profile/edit",
+        element: <EditProfile />,
+      },
+    ],
+  },
+  {
+    element: <AuthPages />,
+    children: [
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "signup",
+        element: <Signup />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <ErrorPage />,
+  },
+]);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+export default function App() {
+  useAxiosInterceptor();
+  return <RouterProvider router={router} />;
 }
-
-export default App
