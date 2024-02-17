@@ -9,7 +9,12 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
       <App />
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: { borderRadius: "10px", background: "#333", color: "#fff" },
+          duration: 2000,
+        }}
+      />
     </AuthProvider>
   </React.StrictMode>
 );

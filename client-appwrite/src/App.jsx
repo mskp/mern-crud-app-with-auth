@@ -1,5 +1,4 @@
 import { RouterProvider, redirect } from "react-router-dom";
-import useAxiosInterceptor from "./hooks/useAxiosInterceptor";
 import { createBrowserRouter } from "react-router-dom";
 import Login from "./pages/AuthPage/Login";
 import Signup from "./pages/AuthPage/Signup";
@@ -47,6 +46,5 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  useAxiosInterceptor();
   return <RouterProvider router={router} />;
 }

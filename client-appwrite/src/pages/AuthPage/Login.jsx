@@ -7,11 +7,16 @@ import { loginValidationSchema } from "../../utils/validationSchemas";
 import { camelCaseToSentenceCase } from "../../utils";
 import InputElement from "./components/InputElement";
 import ButtonElement from "./components/ButtonElement";
-import toast from "react-hot-toast";
 
 function Login() {
-  const { login } = useAuth();
+  const { login, loggedin } = useAuth();
+
   const navigate = useNavigate();
+
+  const handleLogin = async (values) => {
+    await login(values);
+    if (loggedin) navigate("/profile", { replace: true });
+  };
 
   const { handleChange, handleSubmit, values, setErrors, initialValues } =
     useFormik({
@@ -19,13 +24,7 @@ function Login() {
         email: "",
         password: "",
       },
-      onSubmit: async (values) => {
-        const isLoggedin = await login(values);
-        if (isLoggedin) {
-          toast.success("Logged in", { id: "succ" });
-          navigate("/profile", { replace: true });
-        }
-      },
+      onSubmit: handleLogin,
       validationSchema: loginValidationSchema,
     });
 

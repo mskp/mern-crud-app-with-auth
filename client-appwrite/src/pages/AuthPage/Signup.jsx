@@ -1,7 +1,5 @@
-// Importing necessary dependencies from React and React Router
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
 import { signupValidationSchema } from "../../utils/validationSchemas";
 import { camelCaseToSentenceCase } from "../../utils";
 import InputElement from "./components/InputElement";
@@ -10,17 +8,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
 
 export default function Signup() {
+  const { signup, login } = useAuth();
   const navigate = useNavigate();
-
-  const { signup, login, loading } = useAuth();
 
   const {
     handleChange,
     handleSubmit,
-    values,
     setErrors,
     initialValues,
-    errors,
+    values,
+    ...formik
   } = useFormik({
     initialValues: {
       fullName: "",
@@ -31,22 +28,29 @@ export default function Signup() {
       confirmPassword: "",
     },
     onSubmit: async (data) => {
+      if (Object.values(formik.errors).some((error) => error)) {
+        toast.error("Some error occurred"); // Show toast on validation error
+        return;
+      }
       try {
-        data.age = Number(data.age);
-        const { confirmPassword, ...signupData } = data;
-        const isCreated = await signup(signupData);
-
+        const isCreated = await signup({
+          email: data.email,
+          password: data.password,
+          fullName: data.fullName,
+          age: Number(data.age),
+          location: data.location,
+        });
         if (isCreated) {
-          toast.success("Account created", { id: "succ" });
-          await login({
-            email: signupData.email,
-            password: signupData.password,
+          const isLoggedin = await login({
+            email: data.email,
+            password: data.password,
           });
+          toast.success("Signup successful");
           navigate("/profile", { replace: true });
         }
       } catch (error) {
-        console.error(error);
-        toast.error("Some error occured", { id: "err" });
+        console.error("Signup error:", error);
+        toast.error("Error during signup");
       }
     },
     validationSchema: signupValidationSchema,
@@ -73,12 +77,10 @@ export default function Signup() {
               values={values}
             />
           ))}
-
           <ButtonElement
             disabled={Object.keys(values).some((key) => !values[key])}
-            text={loading ? "Signing up..." : "Signup"}
+            text={"Signup"}
           />
-
           <div className="text-sm text-white text-center p-2 rounded-lg">
             Already have an account?{" "}
             <Link

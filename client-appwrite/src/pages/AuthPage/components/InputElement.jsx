@@ -9,6 +9,7 @@ function InputElement({ handleChange, values, field }) {
       placeholder={field.placeholder}
       value={values[field.id]}
       onChange={handleChange}
+      autoComplete="off"
       autoCapitalize="off"
     />
   );
